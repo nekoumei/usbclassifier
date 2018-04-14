@@ -1,4 +1,9 @@
 from setuptools import setup, find_packages
+from os import path
+import re
+
+root_dir = path.abspath(path.dirname(__file__))
+package_name = 'usbclassifier'
 
 try:
     with open('README.md') as f:
@@ -9,10 +14,14 @@ except IOError:
 def _requires_from_file(filename):
     return open(filename).read().splitlines()
 
-version = __import__('usbclassifier').__version__
+with open(path.join(root_dir, package_name, '__init__.py')) as f:
+    init_text = f.read()
+    version = re.search(r'__version__\s*=\s*[\'\"](.+?)[\'\"]', init_text).group(1)
+
+assert version
 
 setup(
-    name='usbclassifier',
+    name=package_name,
     version=version,
     url='https://github.com/nekoumei/usbclassifier',
     author='nekoumei',
