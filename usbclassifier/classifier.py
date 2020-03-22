@@ -17,6 +17,7 @@ class USBaggingClassifier():
         self.models = []
         self.classes_ = None
         self.estimator_methods = [x[0] for x in inspect.getmembers(base_estimator, inspect.ismethod)]
+        self.feature_importances_ = None
 
     def _under_sampling(self, df, column_name):
         value_counts = df[column_name].value_counts().sort_values(ascending=True)
@@ -42,6 +43,15 @@ class USBaggingClassifier():
             model.fit(X, y)
         self.models = models
         self.classes_ = models[0].classes_
+
+        try:
+            feature_importances_list = []
+            for model in models:
+                feature_importances = model.feature_importances_
+                feature_importances_list.append(feature_importances)
+            self.feature_importances_ = np.mean(np.array(feature_importances_list), axis=0)
+        except:
+            self.feature_importances_ = None
 
     def predict(self, X):
         if self.voting == 'hard':
